@@ -326,7 +326,16 @@ static CGEventRef tapEventCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     [ menu addItem : [ NSMenuItem separatorItem ] ]; // A thin grey line
     
     [priorityOptionItems addObject:[ menu addItemWithTitle: NSLocalizedString(@"Send events to both players", @"Send events to both players") action : @selector(prioritizeNone) keyEquivalent : @"" ]];
-    [priorityOptionItems addObject:[ menu addItemWithTitle: NSLocalizedString(@"Prioritize iTunes", @"Prioritize iTunes") action : @selector(prioritizeITunes) keyEquivalent : @"" ]];
+    NSString *prioritizeITunesTitle;
+    if ( @available(macOS 10.15, *) )
+    {
+        prioritizeITunesTitle = NSLocalizedString(@"Prioritize Apple Music", @"Prioritize Apple Music");
+    }
+    else
+    {
+        prioritizeITunesTitle = NSLocalizedString(@"Prioritize iTunes", @"Prioritize iTunes");
+    }
+    [priorityOptionItems addObject:[ menu addItemWithTitle: prioritizeITunesTitle action : @selector(prioritizeITunes) keyEquivalent : @"" ]];
     [priorityOptionItems addObject:[ menu addItemWithTitle: NSLocalizedString(@"Prioritize Spotify", @"Prioritize Spotify") action : @selector(prioritizeSpotify) keyEquivalent : @"" ]];
 
     [ menu addItem : [ NSMenuItem separatorItem ] ]; // A thin grey line
@@ -347,7 +356,7 @@ static CGEventRef tapEventCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     statusItem = [ [ NSStatusBar systemStatusBar ] statusItemWithLength : NSVariableStatusItemLength ];
     [ statusItem setToolTip : @"Mac Media Key Forwarder" ];
     [ statusItem setMenu : menu ];
-    [ statusItem setImage : image ];
+    statusItem.button.image = image;
     [ statusItem setBehavior : NSStatusItemBehaviorRemovalAllowed ];
     if ([self shouldHideFromMenuBar]) {
         [ statusItem setVisible : NO ];
@@ -378,7 +387,7 @@ static CGEventRef tapEventCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 		
 		NSAlert *alert = [[NSAlert alloc] init];
 		[alert setMessageText:@"Error"];
-		[alert setInformativeText:@"Cannot start event listening. Please add Mac Media Key Forwarder to the \"Security & Privacy\" pane in System Preferences. Check \"Accessibility\" and \"Automation\" under the \"Privacy\" tab."];
+		[alert setInformativeText:@"Cannot start event listening. Please add Mac Media Key Forwarder in System Settings > Privacy & Security. Check \"Accessibility\" and \"Automation\"."];
 		[alert addButtonWithTitle:@"Ok"];
 		[alert runModal];
 
